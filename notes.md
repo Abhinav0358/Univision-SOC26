@@ -10,38 +10,16 @@ This document summarizes the core logic, testing patterns, and architecture stru
 
 To minimize storage and computing costs, the camera runs on an event-driven loop that only triggers a capture frame when motion is detected.
 
-+-------------------+
-              |       Start       |
-              +-------------------+
-                        |
-                        v
-              +-------------------+
-              |   Poll Motion     | <-----------------+
-              |   Sensor State    |                   |
-              +-------------------+                   |
-                        |                             |
-                        v                             |
-             /                     \                  |
-            <   Is Motion Detected? > ----(No)--------+
-             \                     /
-                        | (Yes)
-                        v
-              +-------------------+
-              |  Capture Frame    |
-              +-------------------+
-                        |
-                        v
-              +-------------------+
-              |  Save & Process   |
-              |  Frame            |
-              +-------------------+
-                        |
-                        v
-              +-------------------+
-              | Delay (1 second)  |
-              +-------------------+
-                        |
-                        +-----------------------------+
+```mermaid
+graph TD
+    Start([Start]) --> Poll[Poll Motion Sensor State]
+    Poll --> Detect{Is Motion Detected?}
+    Detect -- No --> Poll
+    Detect -- Yes --> Capture[Capture Frame]
+    Capture --> Save[Save & Process Frame]
+    Save --> Delay[Delay 1 second]
+    Delay --> Poll
+```
 
 ### 1.2 Image Analysis Pre-Filtering Algorithm
 
