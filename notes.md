@@ -174,3 +174,98 @@ export const PipelineControlPanel: React.FC = () => {
   );
 };
 ```
+
+##Block based programming
+*   **Block:** A visible, modular operation or step (e.g., "Send Email", "Resize Image").
+*   **Port:** An input or output slot on a block.
+    *   *Input Ports:* Receive incoming data or signals.
+    *   *Output Ports:* Emit processed data or signals.
+*   **Connection:** The line/wire connecting an output port of one block to the input port of another. This represents the flow of data.
+*   **Configuration:** Adjusts the internal variables or parameters of a block without changing its core logic (e.g., setting a threshold, picking a file path).
+*   **Handler:** The underlying code (e.g., Python, JavaScript) that executes the actual work when the block is triggered.
+
+
+
+### 2. Example: Object Detector Block
+
+Below is a breakdown of how a machine learning task maps to this architecture:
+
+*   **Block Name:** Object Detector
+*   **Input Port:** `image` (expects raw image data or a file path)
+*   **Output Port:** `detections` (outputs an array/JSON of labels, coordinates, and confidence levels)
+*   **Configuration:**
+    *   `model_name` (e.g., YOLO, MobileNet)
+    *   `confidence_threshold` (e.g., `0.5`)
+    *   `image_size` (e.g., `640x640`)
+*   **Handler Logic:**
+    1. Retrieve the incoming image from the `image` port.
+    2. Read configuration parameters (`model_name`, `confidence_threshold`, `image_size`).
+    3. Resize the image.
+    4. Pass the image to the selected model to detect objects.
+    5. Filter out results below the confidence threshold.
+    6. Send the filtered list to the `detections` output port.
+
+---
+
+### 3. Tool Ecosystem & When to Use What
+
+Different tools solve different parts of the block-based design puzzle.
+
+#### A. Node-RED (Backend Execution & Automation)
+*   **Purpose:** Building and running live data pipelines, API connections, and automations.
+*   **Characteristics:**
+    *   Browser-based visual editor out of the box.
+    *   Runs on a Node.js backend.
+    *   Ideal for quickly connecting hardware devices (IoT), web services, and APIs.
+*   **Quick Setup Command:**
+    ```bash
+    npm install -g --unsafe-perm node-red
+    node-red
+    # Access via http://localhost:1880
+    ```
+
+#### B. React Flow / Svelte Flow (Frontend Graph UI)
+*   **Purpose:** Building a custom node-editor interface in your own web applications.
+*   **Characteristics:**
+    *   Highly customizable library for rendering nodes, handles (ports), and draggable edges (connections).
+    *   Does *not* handle execution backend logic; it is purely a visual UI framework.
+*   **Quick Setup Command:**
+    ```bash
+    npm install @xyflow/react
+    ```
+
+#### C. Google Blockly (Block-Based Code Generation)
+*   **Purpose:** Creating visual, puzzle-like block programming interfaces (similar to Scratch) that generate raw text-based code.
+*   **Characteristics:**
+    *   Blocks lock together physically to represent logical structures (loops, conditionals, variables).
+    *   Outputs clean, executable JavaScript, Python, PHP, Dart, or Lua code.
+    *   Widely used in educational games, toys, and developer portals.
+
+
+## 1. Core Graph Theory Concepts
+
+When a user designs a workflow visually, they are drawing a mathematical construct known as a **graph**.
+
+*   **Graph:** A structure consisting of a set of points and the lines connecting them.
+*   **Nodes (Vertices):** In workflow design, these represent individual **blocks** (e.g., Load Image, Save File).
+*   **Edges (Links):** These represent the **connections** (wires) carrying data or execution signals from one block's port to another.
+*   **Directed Graph:** A graph where edges have a defined direction (represented by arrows). In a workflow, data flows unidirectionally from an output port to an input port.
+*   **Directed Acyclic Graph (DAG):** A directed graph with no closed loops (cycles). A workflow must be a DAG to ensure execution can start, progress, and terminate without getting caught in an infinite loop.
+
+---
+
+### Topological Sorting with Kahn's Algorithm
+
+To execute a DAG, the system must convert the network of blocks into a linear, step-by-step sequence. This process is called **topological sorting**. A valid topological sort ensures that no block is executed before its dependency requirements (inputs) are fully processed.
+
+### How Kahn's Algorithm Works
+
+Kahn's algorithm relies on tracking **children** (through an adjacency list) and keeping a count of **parents** (known as the *in-degree* of a node).
+
+1.  **In-Degree Calculation:** Count the incoming edges for every node. A node with an in-degree of `0` has zero dependencies.
+2.  **Initialize Queue:** Locate all nodes with an in-degree of `0` and place them in a queue.
+3.  **Process Queue:**
+    *   Pop a node from the queue and place it into the final sorted list.
+    *   For each of its child nodes, decrement their in-degree count by `1`.
+    *   If any child's in-degree drops to `0`, push it to the queue.
+4.  **Cycle Check:** If the sorted list does not contain all nodes from the graph, a cycle exists, and execution must be halted.
