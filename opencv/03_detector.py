@@ -1,3 +1,6 @@
+import os
+import urllib.request
+
 import cv2
 import numpy as np
 
@@ -9,6 +12,16 @@ except ImportError:
     print("Please install it by running: pip install ultralytics")
     exit()
 
+
+img_path = "sample_car.jpg"
+if not os.path.exists(img_path):
+    print("Downloading sample image...")
+    url = "https://images.unsplash.com/photo-1504381270825-025726abb1de?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bnVtYmVyJTIwcGxhdGV8ZW58MHx8MHx8fDA%3D"
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req) as response, open(img_path, "wb") as out_file:
+        out_file.write(response.read())
+
+
 # --- 1. Load Pre-trained Model ---
 # 'yolov8n.pt' is the "nano" version. It is very fast and lightweight.
 # The first time you run this, it will download the model file (~6MB).
@@ -16,18 +29,17 @@ print("Loading YOLOv8 nano model...")
 model = YOLO("yolov8n.pt")
 
 # --- 2. Load the Image ---
-img_path = "sample_car.jpg"
 img = cv2.imread(img_path)
 
 if img is None:
-    print(f"Error: Could not load {img_path}. Please run 01_vision_basics.py first.")
+    print("Error downloading image.")
     exit()
 
 # --- 3. Run Inference (Detection) ---
 # Pass the image to the model.
 # We set conf=0.5 to tell the model: "Only return detections you are >50% sure about"
 print("Running object detection...")
-results = model(img, conf=0.5)
+results = model(img, conf=0.3)
 
 # --- 4. Parse the Results ---
 # The model returns a list of result objects (one for each image processed).
@@ -105,6 +117,4 @@ print(
 )
 
 # --- 7. Visualization ---
-cv2.imshow("Detected Objects", drawn_img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+cv2.imwrite("assets/Detected Objects.png", drawn_img)

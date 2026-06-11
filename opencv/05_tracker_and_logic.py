@@ -57,7 +57,7 @@ for frame_num, detections in enumerate(frames):
                 # If it moved a lot, but still within our threshold, flag it!
                 if dist > 30:
                     print(
-                        f"🚨 ALERT: Car ID {assigned_id} is SPEEDING! (Moved {dist:.1f}px)"
+                        f" ALERT: Car ID {assigned_id} is SPEEDING! (Moved {dist:.1f}px)"
                     )
 
                 # We matched it, so remove it from the pool of available tracks
@@ -88,7 +88,7 @@ for frame_num, detections in enumerate(frames):
             dist_between_cars = calculate_distance(car1_pos, car2_pos)
             if dist_between_cars < 35:  # If centers are less than 35px apart
                 print(
-                    f"⚠️ ALERT: Car {car2_id} is TAILGATING Car {car1_id}! (Distance: {dist_between_cars:.1f}px)"
+                    f" ALERT: Car {car2_id} is TAILGATING Car {car1_id}! (Distance: {dist_between_cars:.1f}px)"
                 )
 
     # Update our memory for the next frame

@@ -144,6 +144,7 @@ for frame_num in range(10):
     active_tracks = current_frame_tracks
 
     # --- F. Render Frame ---
+    display_frame = cv2.resize(display_frame, (800, 600))
     cv2.imshow("Gate Monitor System", display_frame)
 
     # Wait 500ms between frames so we can see what's happening
