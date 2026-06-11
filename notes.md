@@ -272,7 +272,7 @@ Kahn's algorithm relies on tracking **children** (through an adjacency list) and
 
 
 ## Computer vision fundamentals
-###**opencv/01_vision_basics.py**
+### **opencv/01_vision_basics.py**
 - using *opencv*
 - reading writing showing images
 - crop, resize, grayscale, equalize, thresholding on images
