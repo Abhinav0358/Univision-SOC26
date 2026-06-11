@@ -269,3 +269,27 @@ Kahn's algorithm relies on tracking **children** (through an adjacency list) and
     *   For each of its child nodes, decrement their in-degree count by `1`.
     *   If any child's in-degree drops to `0`, push it to the queue.
 4.  **Cycle Check:** If the sorted list does not contain all nodes from the graph, a cycle exists, and execution must be halted.
+
+
+## Computer vision fundamentals
+###**opencv/01_vision_basics.py**
+- using *opencv*
+- reading writing showing images
+- crop, resize, grayscale, equalize, thresholding on images
+### **opencv/02_enhancement.py**
+- Creating images with noise
+- Applying filters (blur, sharpen, etc.)
+- preprocessing - canny edges
+- normalization
+### **opencv/03_detector.py**
+- using *YOLO* to detect images
+- bounding boxes, confidence threshold, IoU
+### **opencv/04_ocr_reader.py**
+- using *pytesseract* to read text from images
+- grayscale, blur, thresholding works well
+### **opencv/05_tracker_and_logic.py**
+- tracking multiple frames at once
+- calculating centroid and then distance between object in current frame and previous frame
+### **opencv/main_pipeline.py**
+- integrating all components in a single pipeline
+- taking a single image, creating new images from that by shifting objects
