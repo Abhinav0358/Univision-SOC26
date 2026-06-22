@@ -1,4 +1,4 @@
-# SOC26 Study & Implementation Repository
+# Univision - SOC26
 
 This repository contains notes, code implementations compiled during the project.
 
