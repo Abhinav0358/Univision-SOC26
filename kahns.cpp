@@ -2,23 +2,21 @@
 #include <vector>
 #include <queue>
 
-// Performs topological sort using Kahn's Algorithm.
-// Returns a vector with the sorted order, or an empty vector if a cycle is detected.
+// Computes a topological ordering of a DAG using Kahn's algorithm.
+// Returns the sorted node indices, or an empty vector if a cycle is detected.
 std::vector<int> topologicalSort(int numNodes, const std::vector<std::pair<int, int>>& edges) {
-    // 1. Initialize adjacency list and in-degree counter
     std::vector<std::vector<int>> adj(numNodes);
     std::vector<int> inDegree(numNodes, 0);
 
-    // Build the graph and calculate in-degrees
-    // edges[i].first is the parent node, edges[i].second is the child node
+    // Build the adjacency list and compute incoming degrees for each node
     for (const auto& edge : edges) {
         int u = edge.first;
         int v = edge.second;
-        adj[u].push_back(v); // Track children
-        inDegree[v]++;       // Track parents (incoming edges)
+        adj[u].push_back(v);
+        inDegree[v]++;
     }
 
-    // 2. Queue to track nodes with no dependencies (in-degree of 0)
+    // Queue nodes that have no incoming dependencies (in-degree == 0)
     std::queue<int> q;
     for (int i = 0; i < numNodes; ++i) {
         if (inDegree[i] == 0) {
@@ -26,57 +24,51 @@ std::vector<int> topologicalSort(int numNodes, const std::vector<std::pair<int, 
         }
     }
 
-    // List to store the final execution order
     std::vector<int> order;
 
-    // 3. Process the nodes
+    // Process nodes layer by layer, removing edges as we go
     while (!q.empty()) {
         int u = q.front();
         q.pop();
         order.push_back(u);
 
-        // Decrease the in-degree of all children
         for (int v : adj[u]) {
             inDegree[v]--;
-            // If child has no remaining parent dependencies, add to queue
+            // Node v is ready to be processed once all its dependencies are resolved
             if (inDegree[v] == 0) {
                 q.push(v);
             }
         }
     }
 
-    // 4. Cycle Detection
-    // If we couldn't process all nodes, there is a cycle (the graph is not a DAG)
+    // If we couldn't process all nodes, the graph contains a cycle
     if (order.size() != static_cast<size_t>(numNodes)) {
-        return {}; // Return empty vector indicating failure
+        return {};
     }
 
     return order;
 }
 
 int main() {
-    // Example Workflow (DAG):
-    // 0: Load Image
-    // 1: Resize Image (depends on 0)
-    // 2: Grayscale Conversion (depends on 1)
-    // 3: Object Detection (depends on 1)
-    // 4: Display Results (depends on 2 and 3)
+    // Setup a sample DAG representing a simple vision pipeline dependency graph:
+    // 0 (Load) -> 1 (Resize) -> 2 (Grayscale) -> 4 (Display)
+    // 1 (Resize) -> 3 (Object Detection) -> 4 (Display)
 
     int numNodes = 5;
     std::vector<std::pair<int, int>> edges = {
-        {0, 1}, // 0 -> 1
-        {1, 2}, // 1 -> 2
-        {1, 3}, // 1 -> 3
-        {2, 4}, // 2 -> 4
-        {3, 4}  // 3 -> 4
+        {0, 1},
+        {1, 2},
+        {1, 3},
+        {2, 4},
+        {3, 4}
     };
 
     std::vector<int> executionOrder = topologicalSort(numNodes, edges);
 
     if (executionOrder.empty()) {
-        std::cout << "Error: Cycle detected! Workflow cannot be executed." << std::endl;
+        std::cout << "Error: Cycle detected! The dependency graph is not a DAG." << std::endl;
     } else {
-        std::cout << "Valid execution order determined: ";
+        std::cout << "Valid execution order: ";
         for (int node : executionOrder) {
             std::cout << node << " ";
         }
